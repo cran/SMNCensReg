@@ -1,0 +1,9 @@
+3ff6db6aa35afc4781dd92cf4469733f *DESCRIPTION
+7af50398c4e680c9c09c91ff72051f63 *NAMESPACE
+6a54a44d39823e33e2f5091087bbadbc *R/CensRegSMN.r
+a1138ee9793ea678bb15770fe262083e *R/EM_SMN.r
+62efe10f8c6cd01a9b6f38124c972df2 *R/Utilitarios.r
+770a87fea5c5deec2add48b8bbc0dbe2 *data/wage.rates.txt.gz
+15478b340a8362bb79fd2a6ea0dde1a0 *desktop.ini
+979cf6f10f309739f656294481633bde *man/CensReg.SMN.Rd
+15ff4d5de7e64762b10b7030476b6c52 *man/wage.rates.Rd
