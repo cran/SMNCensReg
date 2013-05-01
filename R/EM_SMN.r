@@ -16,7 +16,7 @@
 
 ###### EM algorithm
 
-EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,beta=NULL,cens="1",type="T",criteria="FALSE", sd="FALSE", error=0.0001, iter.max=200)
+EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,beta=NULL,cens="1",type="T",criteria="FALSE", SE="FALSE", error=0.0001, iter.max=200)
 {
  	x <- cbind(1,x)
  	x <- as.matrix(x)
@@ -31,7 +31,7 @@ reg <- lm(y ~ x[,2:p])
   count <- 0
   criterio <- 1
   iter.max = 150
-  SE <- matrix(0,1,p)
+  SE1 <- matrix(0,1,p)
   res <- NULL
   Lim1  <- Lim2 <- c()
 
@@ -84,7 +84,7 @@ reg <- lm(y ~ x[,2:p])
          suma1 <- t(t(x)%*%u1)
          
          u0.matriz <- Diagonal(n,as.numeric(sqrt(u0)))
-         xnovo <- u0.matriz%*%x
+         xnovo <- as.matrix(u0.matriz%*%x)
          suma2 <- t(xnovo)%*%xnovo
          
        
@@ -124,10 +124,10 @@ reg <- lm(y ~ x[,2:p])
     BIC <- (-2)*logver + (p+2)*log(n)
     EDC <- (-2)*logver + (p+2)*0.2*sqrt(n)    
     
-    if (sd=="TRUE")
+    if (SE=="TRUE")
     {
-    SE <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta,logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, sd=SE)
+    SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta,cens,type)
+    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta,logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
     }
     else
     {
@@ -136,10 +136,10 @@ reg <- lm(y ~ x[,2:p])
    }
    else
    {
-    if (sd=="TRUE")
+    if (SE=="TRUE")
     {
-    SE <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta, count=count, res=res, sd=SE)
+    SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta,cens,type)
+    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta, count=count, res=res, SE=SE1)
     }
     else
     {
@@ -153,7 +153,9 @@ reg <- lm(y ~ x[,2:p])
    
   if (type == "PearsonVII")
   {
-  param  <- matrix(c(betas,sigma2,nu,delta),ncol=1)      
+	delta<-1
+  param  <- matrix(c(betas,sigma2,nu,delta),ncol=1)  
+      
     u0 <- u1 <- u2 <- c()
    while(criterio > error || count<=iter.max)
      {
@@ -161,7 +163,7 @@ reg <- lm(y ~ x[,2:p])
             mu <- x%*%(betas)
         # Passo E
 
-    NCensEUY <- NCensurEsperUY(y,mu,sigma2,nu,0,type=type)    
+    NCensEUY <- NCensurEsperUY(y,mu,sigma2,nu,delta,type=type)    
            u0 <- NCensEUY$EUY0
         	 u1 <- NCensEUY$EUY1
            u2 <- NCensEUY$EUY2
@@ -173,11 +175,10 @@ reg <- lm(y ~ x[,2:p])
             S1 <- matrix(0, n)
             S2 <- matrix(0, n)
             S3 <- matrix(0, n)
- 			
          suma1 <- t(t(x)%*%u1)
          
          u0.matriz <- Diagonal(n,as.numeric(sqrt(u0)))
-         xnovo <- u0.matriz%*%x
+         xnovo <- as.matrix(u0.matriz%*%x)
          suma2 <- t(xnovo)%*%xnovo
          
         betas <- t(solve(suma2)%*%t(suma1))
@@ -191,17 +192,17 @@ reg <- lm(y ~ x[,2:p])
          fp3 <- function(nu){sum(log(dPearsonVII(auxf0[cc==0],0,1,nu,delta)/sqrt(sigma2)))+ sum(log(PearsonVII(auxf1[cc==1],0,1,nu,delta)-PearsonVII(auxf[cc==1],0,1,nu,delta)))}
          
          if (cens=="1"){
-           nu <- optimize(fp1, c(MIN_NU,MAX_NU), tol = TOLERANCIA, maximum = TRUE)$maximum 
+           nu <- optimize(f=fp1,interval=c(MIN_NU,MAX_NU),lower = MIN_NU, upper=MAX_NU,tol = TOLERANCIA, maximum = TRUE)$maximum 
            logver= fp1(nu)
          }
          
          if (cens=="2"){
-           nu <- optimize(fp2, c(MIN_NU,MAX_NU), tol = TOLERANCIA, maximum = TRUE)$maximum 
+           nu <- optimize(f=fp2,interval=c(MIN_NU,MAX_NU),lower = MIN_NU, upper=MAX_NU,tol = TOLERANCIA, maximum = TRUE)$maximum 
            logver= fp2(nu)
          }
          
          if (cens=="3"){
-           nu <- optimize(fp3, c(MIN_NU,MAX_NU), tol = TOLERANCIA, maximum = TRUE)$maximum 
+           nu <- optimize(f=fp3,interval=c(MIN_NU,MAX_NU),lower = MIN_NU, upper=MAX_NU,tol = TOLERANCIA, maximum = TRUE)$maximum 
            logver= fp3(nu)
          }
          
@@ -216,10 +217,10 @@ reg <- lm(y ~ x[,2:p])
     BIC <- (2)*logver + (p+3)*log(n)
     EDC <- (2)*logver + (p+3)*0.2*sqrt(n)    
     
-    if (sd=="TRUE")
+    if (SE=="TRUE")
     {
-    SE <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta,logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, sd=SE)
+    SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta,cens,type)
+    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta,logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
     }
     else
     {
@@ -228,10 +229,10 @@ reg <- lm(y ~ x[,2:p])
    }
    else
    {
-    if (sd=="TRUE")
+    if (SE=="TRUE")
     {
-    SE <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta, count=count, res=res, sd=SE)
+    SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta,cens,type)
+    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta, count=count, res=res, SE=SE1)
     }
     else
     {
@@ -269,7 +270,7 @@ reg <- lm(y ~ x[,2:p])
          suma1 <- t(t(x)%*%u1)
          
          u0.matriz <- Diagonal(n,as.numeric(sqrt(u0)))
-         xnovo <- u0.matriz%*%x
+         xnovo <- as.matrix(u0.matriz%*%x)
          suma2 <- t(xnovo)%*%xnovo
          
          
@@ -313,10 +314,10 @@ reg <- lm(y ~ x[,2:p])
     AIC <- (-2)*logver + 2*(p+2)   ## p (Colunas de X) + Sigma2 + nu
     BIC <- (-2)*logver + (p+2)*log(n)
     EDC <- (-2)*logver + (p+2)*0.2*sqrt(n)    
-    if (sd=="TRUE")
+    if (SE=="TRUE")
     {
-    SE <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, sd=SE)
+    SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
+    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
     }
     else
     {
@@ -325,10 +326,10 @@ reg <- lm(y ~ x[,2:p])
    }
    else
    {
-    if (sd=="TRUE")
+    if (SE=="TRUE")
     {
-    SE <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, count=count, res=res, sd=SE)
+    SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
+    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, count=count, res=res, SE=SE1)
     }
     else
     {
@@ -368,7 +369,7 @@ reg <- lm(y ~ x[,2:p])
          suma1 <- t(t(x)%*%u1)
          
          u0.matriz <- Diagonal(n,as.numeric(sqrt(u0)))
-         xnovo <- u0.matriz%*%x
+         xnovo <- as.matrix(u0.matriz%*%x)
          suma2 <- t(xnovo)%*%xnovo
  
        betas <- t(solve(suma2)%*%t(suma1))
@@ -450,10 +451,10 @@ reg <- lm(y ~ x[,2:p])
     AIC <- (-2)*logver + 2*(p+3)   ## p (Colunas de X) + Sigma2 + nu + Gamma
     BIC <- (-2)*logver + (p+3)*log(n)
     EDC <- (-2)*logver + (p+3)*0.2*sqrt(n)    
-    if (sd=="TRUE")
+    if (SE=="TRUE")
     {
-    SE <- IM.Cens(cc,x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, sd=SE)
+    SE1 <- IM.Cens(cc,x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
+    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
     }
     else
     {
@@ -462,10 +463,10 @@ reg <- lm(y ~ x[,2:p])
    }
     else
    {
-    if (sd=="TRUE")
+    if (SE=="TRUE")
     {
-    SE <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, count=count, res=res, sd=SE)
+    SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
+    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, count=count, res=res, SE=SE1)
     }
     else
     {
@@ -477,7 +478,7 @@ reg <- lm(y ~ x[,2:p])
   }
   if (type == "Normal")
   {
-   # Inicializa beta e sigma2 com os estimadores de mínimos quadrados
+
        u0 <- u1 <- u2 <- c()   
  		param <- matrix(c(betas,sigma2),ncol=1)
      criterio <- 1      
@@ -503,19 +504,26 @@ reg <- lm(y ~ x[,2:p])
          suma1 <- t(t(x)%*%u1)
          
          u0.matriz <- Diagonal(n,as.numeric(sqrt(u0)))
-         xnovo <- u0.matriz%*%x
+         xnovo <- as.matrix(u0.matriz%*%x)
          suma2 <- t(xnovo)%*%xnovo
          
        betas <- t(solve(suma2)%*%t(suma1))
    		sigma2 <- sum(u2-2*u1*mu+mu^2*u0)/n
+
     	 auxf0 <- (y-x%*%t(betas))/sqrt(sigma2)
- 	  		auxf <- (Lim1-x%*%t(betas))/sqrt(sigma2)
+
+ 	 auxf <- (Lim1-x%*%t(betas))/sqrt(sigma2)
+
        auxf1 <- (Lim2-x%*%t(betas))/sqrt(sigma2)	
 
-	if(cens==3){		
+	if(cens=="3"){		
       logver <- sum(log(dnorm(auxf0[cc==0])/sqrt(sigma2)))+ sum(log(pnorm(auxf1[cc==1])-pnorm(auxf[cc==1])))  
-	}else{
-	logver <- sum(log(dnorm(auxf0[cc==0])/sqrt(sigma2)))+ sum(log(pnorm(auxf0[cc==1])-pnorm(auxf[cc==1]))) 
+	}
+	if(cens=="1"){
+	logver <- sum(log(dnorm(auxf0[cc==0])/sqrt(sigma2)))+ sum(log(pnorm(auxf0[cc==1]))) 
+	}
+	if(cens=="2"){
+	logver <- sum(log(dnorm(auxf0[cc==0])/sqrt(sigma2)))+ sum(log(1-pnorm(auxf0[cc==1]))) 
 	}
 			
        tetas <- matrix(c(as.vector(betas),sigma2),ncol=1)      
@@ -529,10 +537,10 @@ reg <- lm(y ~ x[,2:p])
     BIC <- (-2)*logver + (p+1)*log(n)
     EDC <- (-2)*logver + (p+1)*0.2*sqrt(n)
     
-    if (sd=="TRUE")
+    if (SE=="TRUE")
     {
-    SE <- IM.Cens(cc, x,y,LS,BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, logver = logver,count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, sd=SE)
+    SE1 <- IM.Cens(cc, x,y,LS,BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
+    obj.out <- list(betas = betas, sigma2 = sigma2, logver = logver,count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
     }
     else
     {
@@ -541,10 +549,10 @@ reg <- lm(y ~ x[,2:p])
    }
     else
    {
-    if (sd=="TRUE")
+    if (SE=="TRUE")
     {
-    SE <- IM.Cens(cc, x,y,LS,BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, count=count, res=res, sd=SE)
+    SE1 <- IM.Cens(cc, x,y,LS,BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
+    obj.out <- list(betas = betas, sigma2 = sigma2, count=count, res=res, SE=SE1)
     }
     else
     {
@@ -605,7 +613,7 @@ IM.Cens <- function(cc,x,y,LS,BETA,SIGMA2,NU,delta=0,cens="1",type="T")
      IM <- Aux <- IC1 <- A<- A1 <- matrix(0,nrow=p,ncol=p) 
     Var <- matrix(0,nrow=n,ncol=1) 
    Aux1 <- matrix(0,nrow=p,ncol=p)
-     SE <- matrix(0,1,p)   
+     se <- matrix(0,1,p)   
    
         if(type=="Normal")
         {
@@ -657,8 +665,8 @@ IM.Cens <- function(cc,x,y,LS,BETA,SIGMA2,NU,delta=0,cens="1",type="T")
 	  IC1 <- (k*IC1)*(1/sigma2)
         A <- IC1  - IM
        A1 <- solve(A)
-       SE <- sqrt(diag(A1))
-return(SE)
+       se <- sqrt(diag(A1))
+return(se)
 }
 
         

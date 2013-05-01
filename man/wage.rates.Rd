@@ -27,15 +27,13 @@ y <- wage.rates$wage
 x <- cbind(wage.rates$age,wage.rates$educ,wage.rates$kidslt6,wage.rates$kidsge6)
 cc<- c(rep(0,428),rep(1,325))
 
-##Fits a left censored Student-t model to the data and builds the corresponding envelope graph
+##Fits a left censored Student-t model to the data
 
-T <- CensReg.SMN(cc,x,y,LS=NULL,nu=4,delta=NULL,beta=NULL,cens="1",type="T",criteria="TRUE",
-show.envelope="TRUE",sd="TRUE",error=0.0001,iter.max=300)
+T <- CensReg.SMN(cc,x,y,LS=NULL,nu=3,delta=NULL,beta=NULL,cens="1",type="T",criteria="FALSE",show.envelope="FALSE",SE="TRUE",error=0.0001,iter.max=300)
 
-##Fits a left censored Slash model to the data and builds the corresponding envelope graph
+##Fits a left censored Slash model to the data
 
-Slash <- CensReg.SMN(cc,x,y,LS=NULL,nu=2.5,delta=NULL,beta=NULL,cens="1",type="Slash",criteria="TRUE",
-show.envelope="TRUE",sd="TRUE",error=0.0001,iter.max=300)
+Slash <- CensReg.SMN(cc,x,y,LS=NULL,nu=2.5,delta=NULL,beta=NULL,cens="1",type="Slash",criteria="FALSE",show.envelope="FALSE",SE="TRUE",error=0.0001,iter.max=300)
 }
 }
 \keyword{datasets}

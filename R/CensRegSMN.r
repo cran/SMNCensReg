@@ -10,11 +10,11 @@
 # type: Normal, T, Slash, NormalC or PearsonVII
 # criteria: TRUE ou FALSE - should compute AIC, BIC and EDC criterias for model selection
 # envelope: TRUE ou FALSE - should compute envelops
-# sd: TRUE or FALSE - should compute standard deviation of betas´s estimators
+# SE: TRUE or FALSE - should compute standard deviation of betas´s estimators
 # error
 # iter.max = 100
 
-CensReg.SMN <- function(cc, x=NULL,y=NULL ,LS=NULL, nu=NULL, delta=NULL,beta=NULL,cens="1",type="T",criteria="TRUE",show.envelope="FALSE", sd="TRUE", error=0.0001,iter.max=300)
+CensReg.SMN <- function(cc, x,y ,LS=NULL, nu=3, delta=NULL,beta=NULL,cens="1",type="T",criteria="FALSE",show.envelope="FALSE", SE="TRUE", error=0.0001,iter.max=300)
 {
 	## Verify error at parameters specification
 	if(ncol(as.matrix(y)) > 1) stop("Only univariate linear regression supported!")
@@ -56,7 +56,7 @@ CensReg.SMN <- function(cc, x=NULL,y=NULL ,LS=NULL, nu=NULL, delta=NULL,beta=NUL
   {
   EnvelopeRMT(cc,x,y,LS,nu,delta,beta,cens=cens,type=type)
   }
-  out <- EM.Cens.Int(cc, x,y,LS,nu,delta,beta,cens,type,criteria, sd, error, iter.max)
+  out <- EM.Cens.Int(cc, x,y,LS,nu,delta,beta,cens,type,criteria, SE, error, iter.max)
   out
 }
 

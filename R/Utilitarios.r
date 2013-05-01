@@ -664,7 +664,7 @@ residNI <- function(y,x,cc,LS,nu=4,delta=0,cens="1",type="T")
 {
 resm <- resmt <- S <- ypad <- vector(mode = "numeric", length = length(y))
    n <- length(y)
-  em <- CensReg.SMN(cc, x, y ,LS, nu=nu, delta=NULL,beta= NULL, cens=cens,type=type,show.envelope="FALSE", sd="FALSE",criteria = "FALSE", error=0.0001,iter.max=300)
+  em <- CensReg.SMN(cc, x, y ,LS, nu=nu, delta=NULL,beta= NULL, cens=cens,type=type,show.envelope="FALSE", SE="FALSE",criteria = "FALSE", error=0.0001,iter.max=300)
 betas1<- em$betas
 sigma21<-em$sigma2
     nu1<- em$nu
