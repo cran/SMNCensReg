@@ -1,18 +1,18 @@
 Package: SMNCensReg
 Type: Package
-Title: Fitting right or left censored regression model under the scale
+Title: Fitting univariate censored regression model under the scale
         mixture of normal distributions.
-Version: 2.0
-Date: 2013-05-01
+Version: 2.1
+Date: 2013-05-19
 Author: Aldo M. Garay <aldowmg@ime.usp.br>, Victor Lachos
-        <hlachos@ime.unicamp.br>, and Monique Bettio Massuia
+        <hlachos@ime.unicamp.br> and Monique Bettio Massuia
         <moniquemassuia@gmail.com>
-Description: Fit univariate right or left censored regression model
-        under the scale mixture of normal distributions.
+Description: Fit univariate right, left or interval censored regression
+        model under the scale mixture of normal distributions.
 Depends: Matrix,PerformanceAnalytics(>= 1.1.0)
 Maintainer: Aldo M. Garay <aldowmg@ime.usp.br>
 License: GPL (>= 3.0)
-Packaged: 2013-05-02 04:05:20 UTC; monique
+Packaged: 2013-05-20 02:32:51 UTC; monique
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-05-02 08:20:06
+Date/Publication: 2013-05-20 07:34:33

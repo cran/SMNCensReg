@@ -1,8 +1,8 @@
-c5ec8cd33f878a903fd78f946ec40d64 *DESCRIPTION
+83b1d40d628a1923a026685b81700407 *DESCRIPTION
 7af50398c4e680c9c09c91ff72051f63 *NAMESPACE
 0948e78551abd6606517b0b041bad047 *R/CensRegSMN.r
 0ce8ea71c0f7a74e67f0067c1f2386c0 *R/EM_SMN.r
 627c6518c6815b82b9590687cfe9fb5a *R/Utilitarios.r
 770a87fea5c5deec2add48b8bbc0dbe2 *data/wage.rates.txt.gz
-d52d49a5e28da1c8a670526d1b221547 *man/CensReg.SMN.Rd
-2c6a7d7dacf4758654ce3e5d6b2065e1 *man/wage.rates.Rd
+b97e83bb3ff96f0bd090607d2f830f42 *man/CensReg.SMN.Rd
+ce40a07f8aea49fcb28e2d0d2e01f239 *man/wage.rates.Rd

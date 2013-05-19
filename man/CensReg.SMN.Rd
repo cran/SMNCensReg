@@ -1,18 +1,19 @@
 \name{CensReg.SMN}
 \alias{CensReg.SMN}
-\title{ Fit univariate right or left censored linear regression model under the scale mixtures of Normal (SMN) distributions }
+\title{ Fit univariate right, left or interval censored linear regression model under the scale mixtures of Normal (SMN) distributions }
 \description{
-Return EM algorithm output for right or left censored regression model under SMN distributions (Normal, Student-t, Pearson VII, Slash or Contaminated Normal),built the corresponding envelope graph and compute some criteria for model selection, such as, AIC, BIC and EDC.
+Return EM algorithm output for right, left or interval censored regression model under SMN distributions (Normal, Student-t, Pearson VII, Slash or Contaminated Normal), built the corresponding envelope graph and compute some criteria for model selection, such as, AIC, BIC and EDC.
 }
 \usage{
-CensReg.SMN(cc,x,y,LS=NULL,nu=3,delta=NULL,beta=NULL,cens="1",type="T",criteria="FALSE",show.envelope="FALSE",SE="TRUE",error=0.0001,iter.max=300)
+CensReg.SMN(cc,x,y,LS=NULL,nu=3,delta=NULL,beta=NULL,cens="1",type="T",
+criteria="FALSE",show.envelope="FALSE",SE="TRUE",error=0.0001,iter.max=300)
 }
 \arguments{
 \item{cc}{ Vector of censoring indicators. For each observation: 0 if non-censored, 1 if censored }
 \item{x}{ Matrix or vector of covariates }
 \item{y}{ Vector of responses in case of right/left censoring. Vector of lower limits if censoring is intervalar }
 \item{LS}{ Vector of upper limits if interval censoring. Must not be provided in case of left/right censoring }
-\item{nu}{ Parameter of the scale variable of the SMN family. Must not be provided in case of Normal distribution. Must be a bidimensional vector in case of contaminated Normal distribution (NormalC) }
+\item{nu}{ Initial value of the parameter of the scale variable of the SMN family. Must not be provided in case of Normal distribution. Must be a bidimensional vector in case of contaminated Normal distribution (NormalC) }
 \item{delta}{ Initial value of the second parameter of Pearson VII. Must not be provided in case of Normal, Student-t or slash distribution }
 \item{beta}{ Initial value for the regression coefficients. If "NULL", MQ estimate is adopted }
 \item{cens}{ "1" for left censoring, "2" for right censoring, "3" for interval censoring }

@@ -14,7 +14,8 @@ A data frame with 753 observed wage rates of married white women in 1975. Some w
 \source{ 
 Mroz, T.A. 1987. "The sesitivity of an empirical model of married women´s hours of work to economic and statistical assumptions". Full data set is available at 
 
-http://www.ispor.org/OpenSourceIndex/cached/Censored_regression_and_sample_selection/mef_aplications_0809.html
+http://www.ispor.org/OpenSourceIndex/cached/Censored_regression_and_sample_selection/mef
+_aplications_0809.html
 }
 
 \examples{
@@ -29,11 +30,13 @@ cc<- c(rep(0,428),rep(1,325))
 
 ##Fits a left censored Student-t model to the data
 
-T <- CensReg.SMN(cc,x,y,LS=NULL,nu=3,delta=NULL,beta=NULL,cens="1",type="T",criteria="FALSE",show.envelope="FALSE",SE="TRUE",error=0.0001,iter.max=300)
+T <- CensReg.SMN(cc,x,y,LS=NULL,nu=3,delta=NULL,beta=NULL,cens="1",type="T",
+criteria="FALSE",show.envelope="FALSE",SE="TRUE",error=0.0001,iter.max=300)
 
-##Fits a left censored Slash model to the data
+##Fits a left censored Normal model to the data
 
-Slash <- CensReg.SMN(cc,x,y,LS=NULL,nu=2.5,delta=NULL,beta=NULL,cens="1",type="Slash",criteria="FALSE",show.envelope="FALSE",SE="TRUE",error=0.0001,iter.max=300)
+Normal <- CensReg.SMN(cc,x,y,LS=NULL,nu=NULL,delta=NULL,beta=NULL,cens="1",type="Normal",
+criteria="FALSE",show.envelope="FALSE",SE="TRUE",error=0.0001,iter.max=300)
 }
 }
 \keyword{datasets}
