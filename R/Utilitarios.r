@@ -29,17 +29,16 @@ P <- function(y,mu,sigma2,nu,delta)
   return(A)
 }
 
-AcumSlash <- function(y,mu,sigma2,nu)
-  {
+
+AcumSlash <- function(y,mu,sigma2,nu){
   Acum <- z <- vector(mode = "numeric", length = length(y))
-  for (i in 1:length(y))
-   { 
-  z[i] <- (y[i]-mu)/sqrt(sigma2)
-    f1 <- function(u) nu*u^(nu-1)*pnorm(z[i]*sqrt(u))
-Acum[i]<- integrate(f1,0,1)$value	 	
+  for (i in 1:length(y)){ 
+  	z[i] <- (y[i]-mu)/sqrt(sigma2)
+    	f1 <- function(u) nu*u^(nu-1)*pnorm(z[i]*sqrt(u)) 
+	Acum[i]<- integrate(f1,0,1)$value	 	
    }
-return(Acum)
-     }
+   return(Acum)
+}
 
 AcumNormalC <- function(y,mu,sigma2,nu)
    {
@@ -69,14 +68,15 @@ dPearsonVII<- function(y,mu,sigma2,nu,delta)
      return(f)
      }
 
+
 dSlash <- function(y,mu,sigma2,nu)
      {
      resp <- z <- vector(mode = "numeric", length = length(y))
      for (i in 1:length(y)) 
      {
      z[i] <- (y[i]-mu)/sqrt(sigma2)
-     f1 <- function(u) nu*u^(nu-0.5)*dnorm(z[i]*sqrt(u))/sqrt(sigma2)
-     resp[i] <- integrate(f1,0,1)$value	 	
+     f2 <- function(u) nu*u^(nu-0.5)*dnorm(z[i]*sqrt(u))/sqrt(sigma2)
+     resp[i] <- integrate(f2,0,1)$value	 	
      }
      return(resp)
      }
@@ -98,7 +98,7 @@ dNormalC <- function(y,mu,sigma2,nu)
 
 NCensurEsperUY <-  function(y,mu=2,sigma2=1,nu=0,delta=0,type="Normal")
 {
-	   EUY0 <- EUY1 <- EUY2 <- c()
+     EUY0 <- EUY1 <- EUY2 <- c()
      d <- (y-mu)^2/sigma2
      n <- length(y)  	   
     if(type=="T")
@@ -153,6 +153,19 @@ GamaInc <- function(a,x)
      return(res)
      }
 
+
+#GamaInc <- function(a,x)
+#     {
+#     res <- vector(mode = "numeric", length = length(x))
+#     for(i in 1:length(x)){
+#		u <- seq(0.0001,x[i],length=5000)
+#		f <- exp(-u)*(u^(a-1))
+#     		res[i] <-trapz(u,f) 	
+#     }
+#     return(res)
+#     }
+
+ 
 E_phi <- function(r,a, nu=3,delta=0,type=type, cens=cens)
 {
         n <- length(a)
@@ -167,73 +180,40 @@ E_phi <- function(r,a, nu=3,delta=0,type=type, cens=cens)
         {
         if(type=="Normal")
         {
-#         if (a==Inf | a == -Inf)
-#         {
-#         resp <- 0
-#         }
-#         else
-#         {
          resp <- dnorm(a)
-#         }
         }
        if(type=="T")
         {
-#         if (a==Inf | a == -Inf)
-#         {
-#         resp <- 0
-#         }
-#         else
-#        {
          Aux0 <- gamma(0.5*(nu+2*r))
          Aux1 <- gamma(nu/2)*sqrt(2*pi) 
          Aux2 <- Aux0/Aux1
          Aux3 <- (0.5*nu)^(nu/2)
          Aux4 <- (0.5*(a^2+nu))^(-0.5*(nu+2*r))
          resp <- Aux2*Aux3*Aux4 
-#         }
         }
         if(type=="PearsonVII")
         {
-#         if (a==Inf | a== -Inf)
-#         {
-#         resp <- 0
-#         }
-#         else
-#         {
          Aux0 <- gamma(0.5*(nu+2*r))
          Aux1 <- gamma(nu/2)*sqrt(2*pi) 
          Aux2 <- Aux0/Aux1
          Aux3 <- (0.5*delta)^(nu/2)
          Aux4 <- (0.5*(a^2+delta))^(-0.5*(nu+2*r))
          resp <- Aux2*Aux3*Aux4 
-#         }
         }
         if(type=="Slash")
         {
-#         if (a ==Inf | a == -Inf)
-#         {
-#         resp <- 0
-#         }
-#         else
-#         {
          Aux0 <- nu/sqrt(2*pi) 
          Aux1 <- (0.5*a^2)^(-(nu+r))
          Aux2 <- GamaInc(nu+r,0.5*a^2)
          resp <- Aux0*Aux1*Aux2 
-#         }
+
         } 
       if(type=="NormalC")
         {
- #        if (a ==Inf | a == -Inf)
- #        {
- #        resp <- 0
- #        }
- #        else
- #        {
          Aux0 <- nu[1]*nu[2]^(r)*dnorm(a*sqrt(nu[2]))
          Aux1 <- (1-nu[1])*dnorm(a)
          resp <- Aux0 + Aux1
- #         }
+
         }
    }      
 return(resp)
@@ -305,6 +285,7 @@ CensEsperUY1 <- function(mu=0,sigma2=1,nu=3,delta=0,Lim1=1,Lim2=4,type=type, cen
         {
         FNIb   <- AcumSlash(Lim21,0,1,nu)
         FNIa   <- AcumSlash(Lim11,0,1,nu)
+	  ##for(i in 1:length(Lim21)){if (Lim21[i]==Inf) FNIb[i]<-1}
         }
         if(type=="NormalC")
         {
@@ -327,20 +308,6 @@ CensEsperUY1 <- function(mu=0,sigma2=1,nu=3,delta=0,Lim1=1,Lim2=4,type=type, cen
          {
          Aux22 <- Lim21
          }
-#         if (Lim11==-Inf)
-#         {
-#         Aux11 <- 0
-#         }else
-#         {
-#         Aux11 <- Lim11
-#         }
-#         if (Lim21==Inf)
-#         {
-#         Aux22 <- 0
-#         }else
-#         {
-#         Aux22 <- Lim21
-#         }
 
    K <- 1/(FNIb-FNIa)
 EUX0 <- K*(E_Phi(1,Lim21, nu,delta,type)- E_Phi(1,Lim11, nu,delta,type))    
@@ -348,15 +315,12 @@ EUX1 <- K*(E_phi(0.5,Lim11,nu,delta,type,cens)- E_phi(0.5,Lim21,nu,delta,type,ce
 EUX2 <- K*(E_Phi(0,Lim21, nu,delta,type)- E_Phi(0,Lim11, nu,delta,type) + Aux11*E_phi(0.5,Lim11,nu,delta,type,cens) - Aux22*E_phi(0.5,Lim21,nu,delta,type,cens))           # Neste c aso r =2   
 EUX20 <- K*(E_Phi(2,Lim21, nu,delta,type)- E_Phi(2,Lim11, nu,delta,type))
 EUX21 <- K*(E_phi(1.5,Lim11,nu,delta,type,cens)- E_phi(1.5,Lim21,nu,delta,type,cens))
-#EUX22 <- K*(E_Phi(1,Lim21, nu,delta,type)- E_Phi(1,Lim11, nu,delta,type) + Aux11*E_phi(1.5,Lim11,nu,delta,type,cens) - Aux22*E_phi(1.5,Lim21,nu,delta,type,cens))           # Neste c aso r =2   
 
 EUY0  <- EUX0          
 EUY1  <- mu*EUX0 + sqrt(sigma2)*EUX1
 EUY2  <- EUX0*mu^2 + 2*mu*sqrt(sigma2)*EUX1 + sigma2*EUX2
 EUY20 <- EUX20
 EUY21 <- mu*EUX20 + sqrt(sigma2)*EUX21
-#EUY22 <- EUX20*mu^2 + 2*mu*sqrt(sigma2)*EUX21 + sigma2*EUX22
-#return(list(EUY0=EUY0,EUY1=EUY1,EUY2=EUY2, EUY20=EUY20, EUY21=EUY21, EUY22=EUY22))
 return(list(EUY0=EUY0,EUY1=EUY1,EUY2=EUY2, EUY20=EUY20, EUY21=EUY21))
 }
 
@@ -480,7 +444,7 @@ geraNC <- function(n,mu,sigma2,nu)
 
 geraDadosR<-function(y,cc,x,betas,sigma2,nu,delta=NULL,cens="1",type="Normal")
 {
-	x <- cbind(1,x)
+	#x <- cbind(1,x)
   x <- as.matrix(x)
   p <- ncol(x)
 	n <- nrow(x)
@@ -559,10 +523,6 @@ geraDadosR<-function(y,cc,x,betas,sigma2,nu,delta=NULL,cens="1",type="Normal")
   }
 return(list(y=resp,cc=ind))
 }
-#N1  <- geraDadosR(y,cc,x,Normal$betas,Normal$sigma2,0,0,cens="1",type="Normal")
-#T1  <- geraDadosR(y,cc,x,T$betas,T$sigma2,T$nu,0,cens="1",type="T")
-#S1  <- geraDadosR(y,cc,x,Slash$betas,Slash$sigma2,Slash$nu,0,cens="1",type="Slash")
-#NC1 <- geraDadosR(y,cc,x,NormalC$betas,NormalC$sigma2,c(0.5,0.5),0,cens="1",type="NormalC")
 
 
 ### Programa para Gerar dados das NI
@@ -642,16 +602,11 @@ emp <- Num <- Den <- c()
  return(emp=emp)
 }
    
-#    mu <- 0
-#sigma2 <- 1
     nu <- 6
  delta <- NULL
    type=  "T"
  (nu+1)/(4*(nu+3))
 
-#MonteCarlo(m=10000,mu,sigma2,nu, delta, type=type)
-#MonteCarlo(m=50000,mu,sigma2,nu, delta, type=type)  
-#MonteCarlo(m=100000,mu,sigma2,nu, delta, type=type)
 
 ################################################################################
 # ANALISE DE RESIDUOS MARTINGALES 
@@ -664,12 +619,13 @@ residNI <- function(y,x,cc,LS,nu=4,delta=0,cens="1",type="T")
 {
 resm <- resmt <- S <- ypad <- vector(mode = "numeric", length = length(y))
    n <- length(y)
-  em <- CensReg.SMN(cc, x, y ,LS, nu=nu, delta=NULL,beta= NULL, cens=cens,type=type,show.envelope="FALSE", SE="FALSE",criteria = "FALSE", error=0.0001,iter.max=300)
+  em <- EM.Cens.Int(cc, x, y ,LS, nu=nu, delta=NULL, cens=cens,type=type, error=0.0001,iter.max=300)
 betas1<- em$betas
 sigma21<-em$sigma2
     nu1<- em$nu
 delta1<-em$delta
-   x1<- cbind(1,x)
+   #x1<- cbind(1,x)
+   x1<-as.matrix(x)
    mu<- x1%*%betas1 
   ypad <- (y-mu)/sqrt(sigma21) 
  if (type=="T")

@@ -16,30 +16,27 @@
 
 ###### EM algorithm
 
-EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,beta=NULL,cens="1",type="T",criteria="FALSE", SE="FALSE", error=0.0001, iter.max=200)
+EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0001, iter.max=200)
 {
- 	x <- cbind(1,x)
- 	x <- as.matrix(x)
- 	y <- as.vector(y)
- 	p <- ncol(x)
-	n <- nrow(x)
-reg <- lm(y ~ x[,2:p])
-	ERRO<-1e-6
-	TOLERANCIA<-1e-6
-	MAX_NU<-150
-	MIN_NU <- 1.01
+  x <- as.matrix(x)
+  y <- as.vector(y)
+  p <- ncol(x)
+  n <- nrow(x)
+
+  reg <- lm(y ~ -1 + x[,1:p])
+  betas <- as.vector(coefficients(reg),mode="numeric")
+  sigma2 <- sum((y-x%*%betas)^2)/(n-p)
+
+  ERRO<-1e-6
+  TOLERANCIA<-1e-6
+  MAX_NU<-150
+  MIN_NU <- 1.01
   count <- 0
   criterio <- 1
   iter.max = 150
   SE1 <- matrix(0,1,p)
   res <- NULL
   Lim1  <- Lim2 <- c()
-
-  # Inicializa beta e sigma2 com os estimadores de mínimos quadrados
-  if(length(beta)==0)
-  {
-  betas <- as.vector(coefficients(reg),mode="numeric")}else{betas<-beta}
-  sigma2 <- sum((y-x%*%betas)^2)/(n-p)
 
   if (cens=="1")
   {
@@ -56,8 +53,6 @@ reg <- lm(y ~ x[,2:p])
   Lim1 <- y
   Lim2 <- LS
   }
-   
-   
   if (type == "T")
   {
   param  <- matrix(c(betas,sigma2,nu),ncol=1)      
@@ -117,35 +112,12 @@ reg <- lm(y ~ x[,2:p])
        betas <- t(betas)
        param <- tetas
        }
-   if (criteria == "TRUE")
-   {
-    
     AIC <- (-2)*logver + 2*(p+2)   ## p (Colunas de X) + Sigma2 + nu 
     BIC <- (-2)*logver + (p+2)*log(n)
     EDC <- (-2)*logver + (p+2)*0.2*sqrt(n)    
     
-    if (SE=="TRUE")
-    {
     SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta,logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
-    }
-    else
-    {
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta,logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC)
-    }
-   }
-   else
-   {
-    if (SE=="TRUE")
-    {
-    SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta, count=count, res=res, SE=SE1)
-    }
-    else
-    {
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta, count=count, res=res)
-    }
-   }
+    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta,logver = logver, count=count, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
    class(obj.out) <- type
    return(obj.out)
   }
@@ -211,34 +183,11 @@ reg <- lm(y ~ x[,2:p])
        betas <- t(betas)
        param <- tetas
        }
-   if (criteria == "TRUE")
-   {
     AIC <- (2)*logver + 2*(p+3)   ## p (Colunas de X) + Sigma2 + nu + delta
     BIC <- (2)*logver + (p+3)*log(n)
     EDC <- (2)*logver + (p+3)*0.2*sqrt(n)    
-    
-    if (SE=="TRUE")
-    {
     SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta,logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
-    }
-    else
-    {
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta,logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC)
-    }
-   }
-   else
-   {
-    if (SE=="TRUE")
-    {
-    SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta, count=count, res=res, SE=SE1)
-    }
-    else
-    {
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta, count=count, res=res)
-    }
-   }
+    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, delta=delta,logver = logver, count=count, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
   class(obj.out) <- type
   return(obj.out) 
   }
@@ -303,39 +252,16 @@ reg <- lm(y ~ x[,2:p])
            logver=fs3(nu)
          }
          
-   
        tetas <- matrix(c(as.vector(betas),sigma2,nu),ncol=1)      
     criterio <- sqrt(t(tetas-param)%*%(tetas-param))
        betas <- t(betas)
         param <- tetas
        }
-   if (criteria == "TRUE")
-   {
     AIC <- (-2)*logver + 2*(p+2)   ## p (Colunas de X) + Sigma2 + nu
     BIC <- (-2)*logver + (p+2)*log(n)
     EDC <- (-2)*logver + (p+2)*0.2*sqrt(n)    
-    if (SE=="TRUE")
-    {
     SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
-    }
-    else
-    {
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC)
-    }
-   }
-   else
-   {
-    if (SE=="TRUE")
-    {
-    SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, count=count, res=res, SE=SE1)
-    }
-    else
-    {
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, count=count, res=res)
-    }
-   }
+   obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
    class(obj.out) <- type
    return(obj.out) 
   }
@@ -446,33 +372,12 @@ reg <- lm(y ~ x[,2:p])
        betas <- t(betas)
        param <- tetas       
        }
-   if (criteria == "TRUE")
-   {
     AIC <- (-2)*logver + 2*(p+3)   ## p (Colunas de X) + Sigma2 + nu + Gamma
     BIC <- (-2)*logver + (p+3)*log(n)
     EDC <- (-2)*logver + (p+3)*0.2*sqrt(n)    
-    if (SE=="TRUE")
-    {
     SE1 <- IM.Cens(cc,x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
-    }
-    else
-    {
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC)
-    }
-   }
-    else
-   {
-    if (SE=="TRUE")
-    {
-    SE1 <- IM.Cens(cc, x,y,LS, BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, count=count, res=res, SE=SE1)
-    }
-    else
-    {
-    obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, count=count, res=res)
-    }
-   }
+  obj.out <- list(betas = betas, sigma2 = sigma2, nu = nu, logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
+   
    class(obj.out) <- type
    return(obj.out) 
   }
@@ -531,34 +436,12 @@ reg <- lm(y ~ x[,2:p])
        betas <- t(betas)
        param <- tetas       
        }
-   if (criteria == "TRUE")
-   {
     AIC <- (-2)*logver + 2*(p+1)   ## p (Colunas de X) + Sigma2 
     BIC <- (-2)*logver + (p+1)*log(n)
     EDC <- (-2)*logver + (p+1)*0.2*sqrt(n)
     
-    if (SE=="TRUE")
-    {
     SE1 <- IM.Cens(cc, x,y,LS,BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
     obj.out <- list(betas = betas, sigma2 = sigma2, logver = logver,count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC, SE=SE1)
-    }
-    else
-    {
-    obj.out <- list(betas = betas, sigma2 = sigma2, logver = logver, count=count, res=res, AIC=AIC, BIC=BIC, EDC=EDC)
-    }
-   }
-    else
-   {
-    if (SE=="TRUE")
-    {
-    SE1 <- IM.Cens(cc, x,y,LS,BETA=betas,SIGMA2=sigma2,NU=nu,delta=NULL,cens,type)
-    obj.out <- list(betas = betas, sigma2 = sigma2, count=count, res=res, SE=SE1)
-    }
-    else
-    {
-    obj.out <- list(betas = betas, sigma2 = sigma2, count=count, res=res)
-    }
-   }
    class(obj.out) <- type
    return(obj.out) 
   }
