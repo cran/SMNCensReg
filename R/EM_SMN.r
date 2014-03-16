@@ -6,7 +6,7 @@
 ### 2.- T (student-t)
 ### 3.- PearsonVII  ---- in this case, delta=1 is fixed
 ### 4.- Slash 
-### 5.- NormalC (contaminated Normal) ---- in this case, nu is fixed
+### 5.- NormalC (contaminated Normal) 
 ################################################################################
 ### cens: type of censoring   
 ###  1: left  (Y_i <= Ki)
@@ -33,7 +33,7 @@ EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0
   MIN_NU <- 1.01
   count <- 0
   criterio <- 1
-  iter.max = 150
+# iter.max = 150
   SE1 <- matrix(0,1,p)
   res <- NULL
   Lim1  <- Lim2 <- c()
@@ -56,7 +56,7 @@ EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0
   if (type == "T")
   {
   param  <- matrix(c(betas,sigma2,nu),ncol=1)      
-  while(criterio > error || count<=iter.max)
+  while(criterio > error & count<=iter.max)
      {
          count <- count + 1
             mu <- x%*%(betas)
@@ -129,7 +129,7 @@ EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0
   param  <- matrix(c(betas,sigma2,nu,delta),ncol=1)  
       
     u0 <- u1 <- u2 <- c()
-   while(criterio > error || count<=iter.max)
+   while(criterio > error & count<=iter.max)
      {
          count <- count + 1
             mu <- x%*%(betas)
@@ -197,7 +197,7 @@ EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0
   u0 <- u1 <- u2 <- c()
  		param  <- matrix(c(betas,sigma2,nu),ncol=1)                 
 
-   while(criterio > error || count<=iter.max)
+   while(criterio > error & count<=iter.max)
      {
          count <- count + 1
             mu <- x%*%(betas)
@@ -238,17 +238,17 @@ EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0
          
          if (cens=="1")
          {
-           nu <- optimize(fs1, c(1.01,30), tol = TOLERANCIA, maximum = TRUE)$maximum
+           nu <- optimize(fs1, c(1.1,30), tol = TOLERANCIA, maximum = TRUE)$maximum
            logver=fs1(nu)
          }
          if (cens=="2")
          {
-           nu <- optimize(fs2, c(1.01,30), tol = TOLERANCIA, maximum = TRUE)$maximum
+           nu <- optimize(fs2, c(1.1,30), tol = TOLERANCIA, maximum = TRUE)$maximum
            logver=fs2(nu)
          }
          if (cens=="3")
          {
-           nu <- optimize(fs3, c(1.01,30), tol = TOLERANCIA, maximum = TRUE)$maximum
+           nu <- optimize(fs3, c(1.1,30), tol = TOLERANCIA, maximum = TRUE)$maximum
            logver=fs3(nu)
          }
          
@@ -273,7 +273,7 @@ EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0
  param  <- matrix(c(betas,sigma2,nu),ncol=1)      
      u0 <- u1 <- u2 <- c()           
  
-   while(criterio > error || count<=iter.max)
+   while(criterio > error & count<=iter.max)
      {
          count <- count + 1
             mu <- x%*%(betas)
@@ -387,7 +387,7 @@ EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0
        u0 <- u1 <- u2 <- c()   
  		param <- matrix(c(betas,sigma2),ncol=1)
      criterio <- 1      
-   while(criterio > error || count<=iter.max)
+   while(criterio > error & count<=iter.max)
      {
          count <- count + 1
             mu <- x%*%(betas)
