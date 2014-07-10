@@ -1,4 +1,4 @@
 export(CensReg.SMN)
 
 import(Matrix)
-importFrom(PerformanceAnalytics, chart.QQPlot)
+import(PerformanceAnalytics)

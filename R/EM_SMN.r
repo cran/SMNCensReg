@@ -6,7 +6,7 @@
 ### 2.- T (student-t)
 ### 3.- PearsonVII  ---- in this case, delta=1 is fixed
 ### 4.- Slash 
-### 5.- NormalC (contaminated Normal) 
+### 5.- NormalC (contaminated Normal) ---- in this case, nu is fixed
 ################################################################################
 ### cens: type of censoring   
 ###  1: left  (Y_i <= Ki)
@@ -206,12 +206,14 @@ EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0
            u0 <- NCensEUY$EUY0
         	 u1 <- NCensEUY$EUY1
            u2 <- NCensEUY$EUY2
-     
+
+     if(sum(cc)>0)
+     {
       CensEUY <- CensEsperUY1(mu[cc==1],sigma2=sigma2,nu=nu,delta=delta,Lim1=Lim1[cc==1],Lim2=Lim2[cc==1],type=type, cens=cens)
      u0[cc==1]<- CensEUY$EUY0
      u1[cc==1]<- CensEUY$EUY1
      u2[cc==1]<- CensEUY$EUY2
-
+     }
             S1 <- matrix(0, n)
             S2 <- matrix(0, n)
             S3 <- matrix(0, n)
@@ -230,12 +232,17 @@ EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0
  			auxf <- (Lim1-x%*%t(betas))/sqrt(sigma2)
      auxf1 <- (Lim2-x%*%t(betas))/sqrt(sigma2)
          
+         if(sum(cc)>0)
+         {  
          fs1 <- function(nu){sum(log(dSlash(auxf0[cc==0],0,1,nu)/sqrt(sigma2)))+ sum(log(AcumSlash(auxf0[cc==1],0,1,nu)))}
-         
          fs2 <- function(nu){sum(log(dSlash(auxf0[cc==0],0,1,nu)/sqrt(sigma2)))+ sum(log(AcumSlash(-auxf0[cc==1],0,1,nu)))}
-         
          fs3 <- function(nu){sum(log(dSlash(auxf0[cc==0],0,1,nu)/sqrt(sigma2)))+ sum(log(AcumSlash(auxf1[cc==1],0,1,nu)-AcumSlash(auxf[cc==1],0,1,nu)))}
-         
+         }
+         else{
+         fs1 <- function(nu){sum(log(dSlash(auxf0[cc==0],0,1,nu)/sqrt(sigma2)))}
+         fs2 <- function(nu){sum(log(dSlash(auxf0[cc==0],0,1,nu)/sqrt(sigma2)))}
+         fs3 <- function(nu){sum(log(dSlash(auxf0[cc==0],0,1,nu)/sqrt(sigma2)))}
+         }
          if (cens=="1")
          {
            nu <- optimize(fs1, c(1.1,30), tol = TOLERANCIA, maximum = TRUE)$maximum
@@ -283,11 +290,13 @@ EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0
            u0 <- NCensEUY$EUY0
         	 u1 <- NCensEUY$EUY1
            u2 <- NCensEUY$EUY2
-     
+     if(sum(cc)>0)
+     {
       CensEUY <- CensEsperUY1(mu[cc==1],sigma2=sigma2,nu=nu,delta=delta,Lim1=Lim1[cc==1],Lim2=Lim2[cc==1],type=type, cens=cens)
      u0[cc==1]<- CensEUY$EUY0
      u1[cc==1]<- CensEUY$EUY1
      u2[cc==1]<- CensEUY$EUY2
+     }
             S1 <- matrix(0, n)
             S2 <- matrix(0, n)
             S3 <- matrix(0, n)
@@ -304,7 +313,48 @@ EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0
 		 auxf0 <- (y-x%*%t(betas))/sqrt(sigma2)
  			auxf <- (Lim1-x%*%t(betas))/sqrt(sigma2)
      auxf1 <- (Lim2-x%*%t(betas))/sqrt(sigma2)
+
+     if(sum(cc)==0)
+     {
+        fnc1 <- f <- function(nu2){
+           a1 <- exp(nu2[1])/(1+exp(nu2[1]))
+           a2 <- exp(nu2[2])/(1+exp(nu2[2]))      
+           ver <-(sum(log(dNormalC(auxf0[cc==0],0,1,c(a1,a2))/sqrt(sigma2))))
+           return(-ver)
+         }
          
+         f11 <- function(nu){
+           ver1 <-(sum(log(dNormalC(auxf0[cc==0],0,1,nu)/sqrt(sigma2))))
+           return(ver1)
+         }
+              
+         
+         fnc2 <- function(nu2){
+           a1 <- exp(nu2[1])/(1+exp(nu2[1]))
+           a2 <- exp(nu2[2])/(1+exp(nu2[2]))      
+           ver <- (sum(log(dNormalC(auxf0[cc==0],0,1,c(a1,a2))/sqrt(sigma2))))
+           return(-ver)
+         }
+         f12 <- function(nu){
+           ver1 <-(sum(log(dNormalC(auxf0[cc==0],0,1,nu)/sqrt(sigma2))))
+           return(ver1)
+         }
+         
+         
+         fnc3 <- function(nu2){
+           a1 <- exp(nu2[1])/(1+exp(nu2[1]))
+           a2 <- exp(nu2[2])/(1+exp(nu2[2]))      
+           ver <-(sum(log(dNormalC(auxf0[cc==0],0,1,c(a1,a2))/sqrt(sigma2))))
+           return(-ver)
+         }
+         f13 <- function(nu){
+           ver1 <-(sum(log(dNormalC(auxf0[cc==0],0,1,nu)/sqrt(sigma2))))
+           return(ver1)
+         }
+     }
+     else
+     {
+
          fnc1 <- f <- function(nu2){
            a1 <- exp(nu2[1])/(1+exp(nu2[1]))
            a2 <- exp(nu2[2])/(1+exp(nu2[2]))      
@@ -340,7 +390,7 @@ EM.Cens.Int <- function(cc, x,y,LS=NULL,nu=3,delta=0,cens="1",type="T",error=0.0
            ver1 <-(sum(log(dNormalC(auxf0[cc==0],0,1,nu)/sqrt(sigma2)))+ sum(log(AcumNormalC(auxf1[cc==1],0,1,nu)-AcumNormalC(auxf[cc==1],0,1,nu))))
            return(ver1)
          }
-         
+      }   
          
          
          if(cens=="1"){
@@ -538,7 +588,11 @@ IM.Cens <- function(cc,x,y,LS,BETA,SIGMA2,NU,delta=0,cens="1",type="T")
         Aux <- matrix(0,nrow=p,ncol=p)
        Aux1 <- t(x)%*%x
         IC1 <- Aux1
- Var[cc==1] <- CensVar(mu[cc==1],sigma2,nu,delta,Lim1=Lim1[cc==1],Lim2=Lim2[cc==1],type=type,cens=cens)
+
+       if(sum(cc)>0)
+       {
+        Var[cc==1] <- CensVar(mu[cc==1],sigma2,nu,delta,Lim1=Lim1[cc==1],Lim2=Lim2[cc==1],type=type,cens=cens)
+       } 
   			for(i in 1:n)
         {
         Aux <- (Var[i]*x[i,])%*%t(x[i,])
