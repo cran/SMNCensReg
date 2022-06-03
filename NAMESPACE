@@ -1,3 +1,6 @@
 export(CensReg.SMN)
 import(Matrix)
 import(PerformanceAnalytics)
+importFrom("stats", "coefficients", "dnorm", "dt", "integrate", "lm",
+               "optim", "optimize", "pnorm", "pt", "rbeta", "rgamma",
+               "rnorm", "rt", "runif")

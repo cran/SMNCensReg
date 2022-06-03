@@ -7,7 +7,7 @@ Return EM algorithm output for right, left or interval censored regression model
 envelope graph and compute some criteria for model selection, such as AIC, BIC and EDC.
 }
 \usage{
-CensReg.SMN(cc,x,y,LS=NULL,nu=3,delta=NULL,cens="left",dist="T", 
+CensReg.SMN(cc,x,y,LS=NULL,nu=3,delta=NULL,cens="left",dist="T",
 show.envelope="FALSE", error=0.0001,iter.max=300)
 }
 \arguments{
@@ -35,9 +35,9 @@ show.envelope="FALSE", error=0.0001,iter.max=300)
 \item{SE}{ Standard error estimates. }
 }
 \references{
- Aldo M. Garay, Victor H. Lachos, Heleno Bolfarine, Celso R. Cabral. "Censored Regression Models with Scale Mixture of Normal Distributions".
- Tech. Rep. 13--13. IMECC--UNICAMP
+ Aldo M. Garay, Victor H. Lachos, Heleno Bolfarine, Celso R. Cabral. "Linear Censored Regression Models with Scale Mixture of Normal Distributions".
+ Statistical Papers.(2017) 58:247--278.
  }
-\author{ Aldo M. Garay \email{aldowmg@ime.usp.br}, Monique Bettio Massuia \email{moniquemassuia@gmail.com} and Victor Hugo Lachos \email{hlachos@ime.unicamp.br} }
+\author{ Aldo M. Garay \email{agaray@de.ufpe.br}, Monique Bettio Massuia \email{moniquemassuia@gmail.com} and Victor Hugo Lachos \email{hlachos@uconn.edu} }
 \examples{ ##see examples in \code{\link{wage.rates}} }
 \keyword{ censored linear regression }
